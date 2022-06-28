@@ -1,0 +1,8 @@
+# -*- coding: utf-8 -*-
+
+
+class AuthCredentials:
+    consumer_key = [ADD CONSUMER KEY HERE]
+    consumer_key_secret = [ADD SECRET KEY HERE]
+    access_token = [ADD ACCESS TOKEN HERE]
+    access_token_secret = [ADD SECRET TOKEN HERE]
