@@ -7,38 +7,41 @@ import tweet_sentiment
 import scraping_analysis
 
 
-# fetch authentication information from auth_file module
+# Fetch authentication information from auth_file module
 auth = tweepy.OAuthHandler(AuthCredentials.consumer_key, AuthCredentials.consumer_key_secret)
 auth.set_access_token(AuthCredentials.access_token, AuthCredentials.access_token_secret)
 api = tweepy.API(auth)
 
 
-# initialize keyword for tweet search
+# Initialize keyword for tweet search
 def enter_keyword():
-    
-    ## initialize prompt that asks user to input keyword for search and store entered value
     keyword = input('Please enter your keyword:')
-    
-    ## print the prompt
     print()
-    
+    return keyword
+
 
 def scrape():
-    tweet_scraping_engOnly.PrintTweets.print_search(enter_keyword.keyword)
+    keyword = enter_keyword()
+    tweet_scraping_engOnly.PrintTweets.print_search(keyword)
     return
 
-    
+
 def print_twsearch():
-    tweet_scraping_engOnly.CleanTweets(tweet_scraping_engOnly.PrintTweets.print_search)
+    keyword = enter_keyword()
+    tweet_scraping_engOnly.CleanTweets(tweet_scraping_engOnly.PrintTweets.print_search(keyword))
     return
 
-def anlayze_tweets_sent():
+
+def analyze_tweets_sent():
+    # Pass the necessary data or modify the functions accordingly
     scraping_analysis.SsentimentData.calculate.pos()
     scraping_analysis.SsentimentData.calculate.neut()
     scraping_analysis.SsentimentData.calculate.neg()
     return
 
+
 def viz_sent():
+    # Pass the necessary data or modify the function accordingly
     tweet_sentiment.analyze_sentiment()
     return
 
