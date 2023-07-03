@@ -126,5 +126,3 @@ class SentimentViz(object):
         
         ### make wordcloud appear in popup window
         plt.show()
-    
-
