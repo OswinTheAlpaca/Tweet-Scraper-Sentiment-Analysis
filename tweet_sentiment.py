@@ -7,19 +7,18 @@ from textblob import TextBlob as tb
 import pandas as pd
 
 
-
 class AnalyzeTweet(object):
     
     def __init__(self, tweet):
-        self.tweet = tweet(str)
+        self.tweet = tweet
     
     def __str__(self):
-        at = AnalyzeTweet(self)
-        print(at)
+        at = AnalyzeTweet(self.tweet)
+        return str(at)
     
     def calculate(self):
         
-        ### calulate tweet polarity and write to csv file
+        ### calculate tweet polarity and write to csv file
         def pol(self):
             
             #### initialize polarity variable and calculate polarity of tweet
@@ -30,13 +29,13 @@ class AnalyzeTweet(object):
             
                 for tweet in tweet_scraping_engOnly.public_tweets:
                     
-                    ###### write polarity number into th Polarity collumn of csv file
+                    ###### write polarity number into the Polarity column of csv file
                     tweet_scraping_engOnly.csv_writer.writerow({'Polarity': polarity})
         
         ### calculate tweet subjectivity and write to csv file
         def subj(self):
             
-            #### initialize polarity variable and calculate polarity of tweet
+            #### initialize subjectivity variable and calculate subjectivity of tweet
             subjectivity = tb(self.tweet).sentiment.subjectivity
             
             
@@ -44,7 +43,7 @@ class AnalyzeTweet(object):
             
                 for tweet in tweet_scraping_engOnly.public_tweets:
                     
-                    ###### write polarity number into th Polarity collumn of csv file
+                    ###### write subjectivity number into the Subjectivity column of csv file
                     tweet_scraping_engOnly.csv_writer.writerow({'Subjectivity': subjectivity})
                     
                     
@@ -61,14 +60,14 @@ class AnalyzeTweet(object):
                 analysis = tb(tweet.text)
                 
                 ##### initialize sentiment analysis classification criteria
-                pos = analysis.sentiment[0]>0
-                neut = analysis.sentiment[0]==0
-                neg = analysis.sentiment[0]<0
+                pos = analysis.sentiment[0] > 0
+                neut = analysis.sentiment[0] == 0
+                neg = analysis.sentiment[0] < 0
                 
-                if tweet == pos:
+                if pos:
                     tweet_scraping_engOnly.csv_writer.writerow({'Sentiment Analysis': 'Positive'})
                     
-                elif tweet == neut:
+                elif neut:
                     tweet_scraping_engOnly.csv_writer.writerow({'Sentiment Analysis': 'Neutral'})
                 
                 else:
