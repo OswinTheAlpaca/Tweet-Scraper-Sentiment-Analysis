@@ -83,6 +83,33 @@ class AnalyzeTweet:
         }
         return sentiment
 
+    def generate_word_cloud(self, filename):
+        # Generate a word cloud from the cleaned tweet text
+        stopwords = set(STOPWORDS)
+        wordcloud = WordCloud(stopwords=stopwords, background_color="white", max_words=1000, mask=None)
+        wordcloud.generate(self.tweet)
+
+        # Save the word cloud as an image
+        wordcloud.to_file(filename)
+
+        # Display the word cloud
+        plt.figure(figsize=(8, 8), facecolor=None)
+        plt.imshow(wordcloud)
+        plt.axis("off")
+        plt.tight_layout(pad=0)
+
+        # Show the word cloud image
+        plt.show()
+
 if __name__ == "__main__":
     keyword = enter_keyword()
-    PrintTweets(keyword).print_search()
+    tweets = api.search(q=f"{keyword} -filter:retweets", lang='en')
+    
+    for tweet in tweets:
+        tweet_text = tweet.text
+        cleaned_tweet = CleanTweets(tweet_text).clean()
+        sentiment = AnalyzeTweet(cleaned_tweet).analyze_sentiment()
+        
+        print("Tweet Text:", cleaned_tweet)
+        print("Sentiment Analysis Result:", sentiment)
+        print()
