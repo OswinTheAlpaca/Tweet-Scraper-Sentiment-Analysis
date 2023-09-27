@@ -1,50 +1,88 @@
-# -*- coding: utf-8 -*-
-
 import tweepy
 from auth_file import AuthCredentials
-import tweet_scraping_engOnly
-import tweet_sentiment
-import scraping_analysis
-
+import pandas as pd
+import csv
+import re
+from textblob import TextBlob
 
 # Fetch authentication information from auth_file module
 auth = tweepy.OAuthHandler(AuthCredentials.consumer_key, AuthCredentials.consumer_key_secret)
 auth.set_access_token(AuthCredentials.access_token, AuthCredentials.access_token_secret)
 api = tweepy.API(auth)
 
-
 # Initialize keyword for tweet search
 def enter_keyword():
-    keyword = input('Please enter your keyword:')
-    print()
+    # Initialize prompt that asks the user to input a keyword for search and store the entered value
+    keyword = input('Please enter your keyword: ')
     return keyword
 
+class PrintTweets:
+    def __init__(self, keyword):
+        self.keyword = keyword
 
-def scrape():
+    # Perform tweet search and print output to a CSV file
+    def print_search(self):
+        # Initialize variable for public tweets mentioning the keyword fetched from the Tweepy API
+        public_tweets = api.search(q=f"{self.keyword} -filter:retweets", lang='en')
+
+        # Ask the user to input the name of the output file to be created
+        filename = input('Please enter a name for the output file: ')
+
+        # Create/open a CSV file to store scraped tweets
+        with open(f'{filename}.csv', 'a+', encoding='utf-8', newline='') as scrape_output:
+            # Initialize field names for the CSV file
+            fieldnames = ['Tweet Text', 'Subjectivity', 'Polarity', 'Sentiment Analysis']
+            csv_writer = csv.DictWriter(scrape_output, fieldnames=fieldnames)
+
+            # Write field names in the CSV file if it's empty
+            if scrape_output.tell() == 0:
+                csv_writer.writeheader()
+
+            for tweet in public_tweets:
+                # Extract tweet text
+                tweet_text = tweet.text
+
+                # Clean the tweet text
+                cleaned_tweet = CleanTweets(tweet_text).clean()
+
+                # Analyze tweet sentiment
+                sentiment = AnalyzeTweet(cleaned_tweet).analyze_sentiment()
+
+                # Write data to the CSV file
+                csv_writer.writerow({
+                    'Tweet Text': cleaned_tweet,
+                    'Subjectivity': sentiment['Subjectivity'],
+                    'Polarity': sentiment['Polarity'],
+                    'Sentiment Analysis': sentiment['Sentiment Analysis']
+                })
+
+class CleanTweets:
+    def __init__(self, tweet):
+        self.tweet = tweet
+
+    # Clean the tweet text
+    def clean(self):
+        # Remove hashtags, mentions, and URLs from tweet text
+        clean_tweet = re.sub("#[A-Za-z0-9]+", "", self.tweet)
+        clean_tweet = re.sub("@[A-Za-z0-9]+", "", clean_tweet)
+        clean_tweet = re.sub(r"(?:\@|http?\://|https?\://|www)\S+", "", clean_tweet)
+        return clean_tweet
+
+class AnalyzeTweet:
+    def __init__(self, tweet):
+        self.tweet = tweet
+
+    # Analyze tweet sentiment
+    def analyze_sentiment(self):
+        analysis = TextBlob(self.tweet)
+        sentiment = {
+            'Subjectivity': analysis.sentiment.subjectivity,
+            'Polarity': analysis.sentiment.polarity,
+            'Sentiment Analysis': 'Positive' if analysis.sentiment.polarity > 0 else
+                                  ('Neutral' if analysis.sentiment.polarity == 0 else 'Negative')
+        }
+        return sentiment
+
+if __name__ == "__main__":
     keyword = enter_keyword()
-    tweet_scraping_engOnly.PrintTweets.print_search(keyword)
-    return
-
-
-def print_twsearch():
-    keyword = enter_keyword()
-    tweet_scraping_engOnly.CleanTweets(tweet_scraping_engOnly.PrintTweets.print_search(keyword))
-    return
-
-
-def analyze_tweets_sent():
-    # Pass the necessary data or modify the functions accordingly
-    scraping_analysis.SsentimentData.calculate.pos()
-    scraping_analysis.SsentimentData.calculate.neut()
-    scraping_analysis.SsentimentData.calculate.neg()
-    return
-
-
-def viz_sent():
-    # Pass the necessary data or modify the function accordingly
-    tweet_sentiment.analyze_sentiment()
-    return
-
-
-
-print_twsearch()
+    PrintTweets(keyword).print_search()
