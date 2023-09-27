@@ -1,9 +1,13 @@
 import tweepy
 from auth_file import AuthCredentials
-import pandas as pd
 import csv
 import re
 from textblob import TextBlob
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
+from PIL import Image
+import numpy as np
+import pandas as pd
 
 # Fetch authentication information from auth_file module
 auth = tweepy.OAuthHandler(AuthCredentials.consumer_key, AuthCredentials.consumer_key_secret)
